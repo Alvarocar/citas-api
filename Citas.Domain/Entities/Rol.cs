@@ -10,7 +10,7 @@ namespace Citas.Domain.Entities
     {
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         public ERolType Type { get; set; }
     }
