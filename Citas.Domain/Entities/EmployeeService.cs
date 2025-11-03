@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
 
-        public int Rating { get; set; }
+        public float Rating { get; set; }
 
         public required Employee Employee { get; set; }
 

@@ -11,10 +11,14 @@ internal class RolConfiguration : IEntityTypeConfiguration<Rol>
         builder.ToTable("rol");
 
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).HasColumnName("id");
+        builder.Property(x => x.Id)
+            .ValueGeneratedOnAdd()
+            .HasColumnType("integer")
+            .HasColumnName("id");
 
         builder.Property(x => x.Name)
             .HasColumnName("name")
+            .HasColumnType("varchar(100)")
             .HasMaxLength(100);
 
         builder.Property(x => x.Type)

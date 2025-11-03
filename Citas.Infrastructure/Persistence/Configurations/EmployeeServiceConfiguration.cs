@@ -11,9 +11,13 @@ internal class EmployeeServiceConfiguration : IEntityTypeConfiguration<EmployeeS
         builder.ToTable("employee_service");
 
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).HasColumnName("id");
+        builder.Property(x => x.Id)
+            .ValueGeneratedOnAdd()
+            .HasColumnType("integer")
+            .HasColumnName("id");
 
         builder.Property(x => x.Rating)
+            .HasColumnType("real")
             .HasColumnName("rating");
 
         builder.HasOne(x => x.Employee)

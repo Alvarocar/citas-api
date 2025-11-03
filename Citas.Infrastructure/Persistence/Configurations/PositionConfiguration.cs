@@ -11,10 +11,14 @@ internal class PositionConfiguration : IEntityTypeConfiguration<Position>
         builder.ToTable("position");
 
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).HasColumnName("id");
+        builder.Property(x => x.Id)
+            .ValueGeneratedOnAdd()
+            .HasColumnType("integer")
+            .HasColumnName("id");
 
         builder.Property(x => x.Name)
             .HasColumnName("name")
+            .HasColumnType("varchar(150)")
             .HasMaxLength(150)
             .IsRequired();
     }

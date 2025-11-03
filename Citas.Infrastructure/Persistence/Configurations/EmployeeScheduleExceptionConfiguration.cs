@@ -12,7 +12,9 @@ internal class EmployeeScheduleExceptionConfiguration : IEntityTypeConfiguration
         builder.ToTable("employee_schedule_exception");
 
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).HasColumnName("id");
+        builder.Property(x => x.Id)
+            .ValueGeneratedOnAdd()
+            .HasColumnName("id");
         
         builder.Property(x => x.RangeTime)
             .HasColumnName("range_time")
@@ -22,7 +24,7 @@ internal class EmployeeScheduleExceptionConfiguration : IEntityTypeConfiguration
 
         builder.Property(x => x.Comment)
             .HasColumnName("comment")
-            .HasMaxLength(1000)
+            .HasColumnType("text")
             .IsRequired();
 
         // Employee relation (required) -> shadow fk employee_id

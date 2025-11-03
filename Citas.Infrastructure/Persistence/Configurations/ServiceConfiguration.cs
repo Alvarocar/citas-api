@@ -11,24 +11,30 @@ internal class ServiceConfiguration : IEntityTypeConfiguration<Service>
         builder.ToTable("service");
 
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).HasColumnName("id");
+        builder.Property(x => x.Id)
+            .ValueGeneratedOnAdd()
+            .HasColumnType("integer")
+            .HasColumnName("id");
 
         builder.Property(x => x.Name)
             .HasColumnName("name")
+            .HasColumnType("varchar(200)")
             .HasMaxLength(200)
             .IsRequired();
 
         builder.Property(x => x.Description)
             .HasColumnName("description")
-            .HasMaxLength(1000)
+            .HasColumnType("text")
             .IsRequired();
 
         builder.Property(x => x.SuggestedPrice)
             .HasColumnName("suggested_price")
+            .HasColumnType("numeric(10, 2)")
             .IsRequired();
 
         builder.Property(x => x.IsUnavailable)
             .HasColumnName("is_unavailable")
+            .HasColumnType("boolean")
             .IsRequired();
 
         // Company relation (shadow FK: company_id)

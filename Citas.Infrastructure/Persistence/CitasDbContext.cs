@@ -13,6 +13,7 @@ public class CitasDbContext : DbContext
     public DbSet<EmployeeSchedule> EmployeeSchedules { get; set; } = null!;
     public DbSet<EmployeeScheduleException> EmployeeScheduleExceptions { get; set; } = null!;
     public DbSet<EmployeeService> EmployeeServices { get; set; } = null!;
+    public DbSet<EmployeeScheduleRange> EmployeeScheduleRanges { get; set; } = null!;
     public DbSet<Position> Positions { get; set; } = null!;
     public DbSet<Rol> Rols { get; set; } = null!;
     public DbSet<Service> Services { get; set; } = null!;

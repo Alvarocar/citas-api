@@ -12,19 +12,17 @@ internal class EmployeeScheduleConfiguration : IEntityTypeConfiguration<Employee
         builder.ToTable("employee_schedule");
 
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).HasColumnName("id");
+        builder.Property(x => x.Id)
+            .ValueGeneratedOnAdd()
+            .HasColumnName("id")
+            .HasColumnType("integer");
 
-        builder.Property(x => x.Day)
-            .HasColumnName("day")
-            .HasColumnType("enum_day")
-            .IsRequired();
+        // Company relation
+        builder.HasOne(x => x.Company)
+               .WithMany()
+               .HasForeignKey("company_id")
+               .IsRequired();
 
-        builder.Property(x => x.StartTime)
-            .HasColumnName("start_time")
-            .IsRequired();
-
-        builder.Property(x => x.EndTime)
-            .HasColumnName("end_time")
-            .IsRequired();
+        builder.HasIndex("company_id").HasDatabaseName("fk__employee_schedule_company");
     }
 }
