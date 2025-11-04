@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddCitasInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        var conn = configuration.GetConnectionString("DefaultConnection");
+        var conn = configuration.GetConnectionString("DBConnection");
         services.AddDbContext<CitasDbContext>(opts => opts.UseNpgsql(conn));
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();

@@ -18,7 +18,7 @@ internal class EmployeeScheduleRangeConfiguration : IEntityTypeConfiguration<Emp
 
         builder.Property(x => x.Day)
             .HasColumnName("day")
-            .HasColumnType("enum__eday")
+            .HasColumnType("enum__day")
             .IsRequired();
 
         builder.Property(x => x.StartTime)

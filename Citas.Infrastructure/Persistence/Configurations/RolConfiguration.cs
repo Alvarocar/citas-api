@@ -23,7 +23,7 @@ internal class RolConfiguration : IEntityTypeConfiguration<Rol>
 
         builder.Property(x => x.Type)
             .HasColumnName("type")
-            .HasColumnType("enum_rol")
+            .HasColumnType("enum__rol")
             .IsRequired();
     }
 }
