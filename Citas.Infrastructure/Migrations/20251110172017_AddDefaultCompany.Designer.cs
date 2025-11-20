@@ -4,6 +4,7 @@ using Citas.Domain.Enums;
 using Citas.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -13,9 +14,11 @@ using NpgsqlTypes;
 namespace Citas.Infrastructure.Migrations
 {
     [DbContext(typeof(CitasDbContext))]
-    partial class CitasDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251110172017_AddDefaultCompany")]
+    partial class AddDefaultCompany
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -145,7 +148,7 @@ namespace Citas.Infrastructure.Migrations
                     b.Property<int>("company_id")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("employee_schedule_id")
+                    b.Property<int>("employee_schedule_id")
                         .HasColumnType("integer");
 
                     b.Property<int?>("position_id")
@@ -429,7 +432,9 @@ namespace Citas.Infrastructure.Migrations
 
                     b.HasOne("Citas.Domain.Entities.EmployeeSchedule", "Schedule")
                         .WithMany()
-                        .HasForeignKey("employee_schedule_id");
+                        .HasForeignKey("employee_schedule_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Citas.Domain.Entities.Position", "Position")
                         .WithMany()
