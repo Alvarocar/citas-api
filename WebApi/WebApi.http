@@ -4,3 +4,22 @@ GET {{WebApi_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+// Crear un administrador
+POST {{WebApi_HostAddress}}/api/employee/
+Content-Type: application/json
+{
+  "firstname": "John",
+  "lastname": "Doe",
+  "email": "john@example.com",
+  "password": "securepassword",
+  "companyId": "1"
+}
+
+###
+// autenticación
+PUT {{WebApi_HostAddress}}/api/employee/sign-in
+Content-Type: application/json
+{
+  "email": "john@example.com",
+  "password": "securepassword"
+}
