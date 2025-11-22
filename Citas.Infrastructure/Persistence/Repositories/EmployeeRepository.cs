@@ -21,7 +21,7 @@ public class EmployeeRepository : BaseRepository<Employee, int>, IEmployeeReposi
   public Task<Employee?> FindByEmail(string email, CancellationToken ct)
   {
     return _set.Where(e => e.Email != null)
-      .Where(e => e.Email!.Equals(email.ToLower()))
+      .Where(e => e.Email! == email.ToLower())
       .Include(e => e.Rol)
       .FirstOrDefaultAsync(ct);
   }

@@ -14,26 +14,13 @@ public class EmployeeController(
   ) : BaseController
 {
 
-  private void _appendTokenToCookies(string token)
-  {
-    Response.Cookies.Append(
-      "access_token",
-      token,
-      new CookieOptions
-      {
-        HttpOnly = true,
-        Secure = true,
-        Expires = DateTime.UtcNow.AddHours(24),
-        SameSite = SameSiteMode.None,
-      }
-     );
-  }
-
   [HttpPost("create-admin")]
-  public Task CreateAdmin()
+  public async Task<IActionResult> CreateAdmin([FromBody] EmployeeCreateAdminDto dto, CancellationToken ct)
   {
-
-    return Task.CompletedTask;
+    var newUser = await _employeeService.CreateOneAdmin(dto, ct);
+    var token = _jwtService.GenerateToken(newUser);
+    AppendTokenToCookies(token);
+    return Created(string.Empty, newUser);
   }
 
   [HttpPost]
@@ -48,16 +35,7 @@ public class EmployeeController(
 
     var createdEmployee = await _employeeService.CreateOne(newEmployee, user, ct);
     var token = _jwtService.GenerateToken(createdEmployee);
-    this._appendTokenToCookies(token);
+    AppendTokenToCookies(token);
     return Created(string.Empty, createdEmployee);
-  }
-
-  [HttpPut("sign-in")]
-  public async Task<IActionResult> SignIn([FromBody] EmployeeSignInDto employee, CancellationToken ct)
-  {
-    var data = await _employeeService.SignIn(employee, ct);
-    var token = _jwtService.GenerateToken(data);
-    this._appendTokenToCookies(token);
-    return Accepted(string.Empty, data);
   }
 }

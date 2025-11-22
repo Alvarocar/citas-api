@@ -2,6 +2,7 @@
 
 namespace Citas.Application.Dto;
 
+
 public class EmployeeCreateAdminDto
 {
   [Required(ErrorMessageResourceType = typeof(Resources.Validations), ErrorMessageResourceName = "Required")]
@@ -18,5 +19,5 @@ public class EmployeeCreateAdminDto
   [MaxLength(10, ErrorMessageResourceType = typeof(Resources.Validations), ErrorMessageResourceName = "Max")]
   public required string PhoneNumber { get; set; }
   [Required(ErrorMessageResourceType = typeof(Resources.Validations), ErrorMessageResourceName = "Required")]
-  public required int CompanyId { get; set; }
+  public required CompanyCreateDto Company { get; set; }
 }

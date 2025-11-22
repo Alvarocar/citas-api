@@ -1,8 +1,9 @@
 namespace Citas.Domain.Repositories;
 
-public interface IUnitOfWork
+public interface IUnitOfWork : IDisposable
 {
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-
-    Task<ITransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
+  Task BeginTransactionAsync(CancellationToken cancellationToken = default);
+  Task CommitTransactionAsync(CancellationToken cancellationToken = default);
+  Task RollbackTransactionAsync(CancellationToken cancellationToken = default);
+  Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

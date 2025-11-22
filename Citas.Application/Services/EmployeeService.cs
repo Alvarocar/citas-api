@@ -1,5 +1,6 @@
 ﻿using Citas.Application.Dto;
 using Citas.Application.Factories;
+using Citas.Domain.Entities;
 using Citas.Domain.Enums;
 using Citas.Domain.Exceptions;
 using Citas.Domain.Repositories;
@@ -11,14 +12,20 @@ public class EmployeeService(
     IRolRepository _rolRepository,
     ICompanyRepository _companyRepository,
     IPasswordHasherService _passwordHasher,
-    IEmployeeFactory _employeeFactory
+    IEmployeeFactory _employeeFactory,
+    IUnitOfWork _unitOfWork
   )
 {
 
   async public Task<UserTokenDto> CreateOneAdmin(EmployeeCreateAdminDto dto, CancellationToken ct)
   {
 
-    if ((await _employeeRepository.FindByEmail(dto.Email, ct)) != null)
+    if ((await _employeeRepository.FindByEmail(dto.Email, ct)) is not null)
+    {
+      throw new AlreadyExistException(Resources.Errors.EmployeeEmailAlreadyExists);
+    }
+
+    if ((await _companyRepository.FirstOrDefaultAsync(com => com.Email == dto.Email.ToLower())) is not null)
     {
       throw new AlreadyExistException(Resources.Errors.EmployeeEmailAlreadyExists);
     }
@@ -31,24 +38,27 @@ public class EmployeeService(
       throw new CitasInternalException();
     }
 
-    var company = await _companyRepository.GetByIdAsync(dto.CompanyId, ct);
-
-    if (company == null)
+    using (_unitOfWork)
     {
-      throw new NotFoundException(Resources.Errors.CompanyNotFound);
+      await _unitOfWork.BeginTransactionAsync(ct);
+      var newCompany = new Company()
+      {
+        Name = dto.Company.Name,
+        Address = dto.Company.Address,
+        Email = dto.Company.Email.ToLower(),
+        PhoneNumber = dto.Company.PhoneNumber,
+      };
+      _companyRepository.Add(newCompany);
+      _employeeRepository.AttachRol(rol);
+      _employeeRepository.AttachCompany(newCompany);
+      var newEmployee = _employeeFactory.CreateAdmin(dto, rol, newCompany);
+      _employeeRepository.Add(newEmployee);
+
+      await _unitOfWork.SaveChangesAsync(ct);
+      await _unitOfWork.CommitTransactionAsync(ct);
+
+      return _employeeFactory.CreateToken(newEmployee);
     }
-
-    _employeeRepository.AttachRol(rol);
-    _employeeRepository.AttachCompany(company);
-
-    var newEmployee = _employeeFactory.CreateAdmin(dto, rol, company);
-
-    _employeeRepository.Add(newEmployee);
-
-    await _employeeRepository.SaveChangesAsync();
-
-    return _employeeFactory.CreateToken(newEmployee);
-
   }
 
   async public Task<UserTokenDto> CreateOne(EmployeeCreateDto dto, UserTokenDto token, CancellationToken ct)

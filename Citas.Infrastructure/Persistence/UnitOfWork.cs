@@ -1,19 +1,58 @@
 using Citas.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Citas.Infrastructure.Persistence;
 
 internal class UnitOfWork : IUnitOfWork
 {
-    private readonly CitasDbContext _db;
-    public UnitOfWork(CitasDbContext db) => _db = db;
+  private readonly DbContext _context;
+  private IDbContextTransaction? _transaction;
 
-    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        => _db.SaveChangesAsync(cancellationToken);
+  public UnitOfWork(DbContext context)
+  {
+    _context = context;
+  }
 
-    public async Task<ITransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+  public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
+  {
+    _transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+  }
+
+  public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+  {
+    if (_transaction != null)
     {
-        var tx = await _db.Database.BeginTransactionAsync(cancellationToken);
-        return new EfCoreTransaction(tx);
+      await _transaction.CommitAsync(cancellationToken);
+      await _transaction.DisposeAsync();
+      _transaction = null;
     }
+  }
+
+  public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
+  {
+    if (_transaction != null)
+    {
+      await _transaction.RollbackAsync(cancellationToken);
+      await _transaction.DisposeAsync();
+      _transaction = null;
+    }
+  }
+
+  public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+  {
+    return await _context.SaveChangesAsync(cancellationToken);
+  }
+
+  public void Dispose()
+  {
+    if (_transaction is not null)
+    {
+      _transaction.Rollback();
+      _transaction?.Dispose();
+      _transaction = null;
+    }
+    _context.Dispose();
+  }
 }
 

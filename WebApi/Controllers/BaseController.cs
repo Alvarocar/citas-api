@@ -33,4 +33,19 @@ public abstract class BaseController : ControllerBase
       throw new NotAuthorizedException();
     }
   }
+
+  protected void AppendTokenToCookies(string token)
+  {
+    Response.Cookies.Append(
+      "access_token",
+      token,
+      new CookieOptions
+      {
+        HttpOnly = true,
+        Secure = true,
+        Expires = DateTime.UtcNow.AddHours(24),
+        SameSite = SameSiteMode.None,
+      }
+     );
+  }
 }
