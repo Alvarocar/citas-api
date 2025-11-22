@@ -27,6 +27,7 @@ internal class ErrorsMiddleware
         AlreadyExistException => StatusCodes.Status409Conflict,
         NotFoundException => StatusCodes.Status404NotFound,
         CitasInternalException => StatusCodes.Status500InternalServerError,
+        NotAuthorizedException => StatusCodes.Status401Unauthorized,
         _ => StatusCodes.Status400BadRequest
       };
       await context.Response.WriteAsJsonAsync(new

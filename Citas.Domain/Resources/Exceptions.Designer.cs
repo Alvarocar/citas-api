@@ -79,6 +79,15 @@ namespace Citas.Domain.Resources {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a Usted no esta autorizado.
+        /// </summary>
+        internal static string NotAuthorized {
+            get {
+                return ResourceManager.GetString("NotAuthorized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a El recurso solicitado no fue encontrado..
         /// </summary>
         internal static string NotFound {

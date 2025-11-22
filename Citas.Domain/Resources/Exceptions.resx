@@ -126,4 +126,7 @@
   <data name="InternalError" xml:space="preserve">
     <value>Hubo un error interno</value>
   </data>
+  <data name="NotAuthorized" xml:space="preserve">
+    <value>Usted no esta autorizado</value>
+  </data>
 </root>

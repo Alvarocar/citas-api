@@ -1,5 +1,7 @@
 ﻿using Citas.Application.Dto;
 using Citas.Application.Services;
+using Citas.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
@@ -9,7 +11,7 @@ namespace WebApi.Controllers;
 public class EmployeeController(
     EmployeeService _employeeService,
     IJwtTokenService _jwtService
-  ) : ControllerBase
+  ) : BaseController
 {
 
   private void _appendTokenToCookies(string token)
@@ -27,10 +29,24 @@ public class EmployeeController(
      );
   }
 
+  [HttpPost("create-admin")]
+  public Task CreateAdmin()
+  {
+
+    return Task.CompletedTask;
+  }
+
   [HttpPost]
+  [Authorize(Roles = nameof(ERolType.ADMINISTRATOR))]
   public async Task<IActionResult> CreateEmployee([FromBody] EmployeeCreateDto newEmployee, CancellationToken ct)
   {
-    var createdEmployee = await _employeeService.CreateOne(newEmployee, ct);
+    var user = GetUserTokenFromClaims();
+    if (user == null)
+    {
+      return Unauthorized();
+    }
+
+    var createdEmployee = await _employeeService.CreateOne(newEmployee, user, ct);
     var token = _jwtService.GenerateToken(createdEmployee);
     this._appendTokenToCookies(token);
     return Created(string.Empty, createdEmployee);

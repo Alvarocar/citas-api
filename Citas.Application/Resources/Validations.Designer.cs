@@ -70,6 +70,15 @@ namespace Citas.Application.Resources {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a Valor no valido.
+        /// </summary>
+        internal static string Invalid {
+            get {
+                return ResourceManager.GetString("Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a El campo no puede tener más de 30 caracteres..
         /// </summary>
         internal static string Max {

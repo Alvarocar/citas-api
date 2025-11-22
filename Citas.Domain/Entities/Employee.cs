@@ -20,7 +20,7 @@
 
     public required Rol Rol { get; set; }
 
-    public Company? Company { get; set; }
+    public required Company Company { get; set; }
 
     public EmployeeSchedule? Schedule { get; set; }
 

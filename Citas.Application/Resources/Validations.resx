@@ -120,6 +120,9 @@
   <data name="EmailAddress" xml:space="preserve">
     <value>El campo debe ser un email valido</value>
   </data>
+  <data name="Invalid" xml:space="preserve">
+    <value>Valor no valido</value>
+  </data>
   <data name="Max" xml:space="preserve">
     <value>El campo no puede tener más de 30 caracteres.</value>
   </data>

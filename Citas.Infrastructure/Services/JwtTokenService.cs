@@ -1,4 +1,5 @@
 ﻿using Citas.Application.Dto;
+using Citas.Application.Factories;
 using Citas.Application.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -6,51 +7,51 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
 
-namespace Citas.Infrastructure.Services
+namespace Citas.Infrastructure.Services;
+
+public class JwtTokenService(
+  IConfiguration _configuration,
+  IEmployeeFactory _employeeFactory
+  ) : IJwtTokenService
 {
-  public class JwtTokenService : IJwtTokenService
+  public string GenerateToken(UserTokenDto user)
   {
-    private readonly IConfiguration _configuration;
+    var audiences = _configuration.GetSection("Jwt:Audiences").Get<string[]>();
 
-    public JwtTokenService(IConfiguration configuration)
+    var claims = new List<Claim>
     {
-      _configuration = configuration;
+      new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+      new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
+      new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
+      new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName),
+      new Claim(ClaimTypes.Role, user.Rol.ToString())
+    };
+
+    if (audiences != null)
+    {
+      claims.AddRange(audiences.Select(aud => new Claim(JwtRegisteredClaimNames.Aud, aud)));
     }
 
-    public string GenerateToken(UserTokenDto user)
+    var descriptor = new SecurityTokenDescriptor
     {
-      var audiences = _configuration.GetSection("Jwt:Audiences").Get<string[]>();
-
-      var claims = new List<Claim>
-      {
-        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-        new Claim(JwtRegisteredClaimNames.Email, user.Email),
-        new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
-        new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName),
-        new Claim(ClaimTypes.Role, user.Rol.ToString())
-      };
-
-      if (audiences != null)
-      {
-        claims.AddRange(audiences.Select(aud => new Claim(JwtRegisteredClaimNames.Aud, aud)));
-      }
-
-      var descriptor = new SecurityTokenDescriptor
-      {
-        Subject = new ClaimsIdentity(claims),
-        Expires = DateTime.UtcNow.AddHours(24),
-        SigningCredentials = new SigningCredentials(
-          new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)
-          ),
-          SecurityAlgorithms.HmacSha256
+      Subject = new ClaimsIdentity(claims),
+      Expires = DateTime.UtcNow.AddHours(24),
+      SigningCredentials = new SigningCredentials(
+        new SymmetricSecurityKey(
+          Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!)
         ),
-        Issuer = _configuration["Jwt:Issuer"],
-      };
+        SecurityAlgorithms.HmacSha256
+      ),
+      Issuer = _configuration["Jwt:Issuer"],
+    };
 
-      var tokenHandler = new JsonWebTokenHandler();
+    var tokenHandler = new JsonWebTokenHandler();
 
-      return tokenHandler.CreateToken(descriptor);
-    }
+    return tokenHandler.CreateToken(descriptor);
+  }
+
+  public UserTokenDto? GetUserToken(string token)
+  {
+    return _employeeFactory.CreateToken(token);
   }
 }
