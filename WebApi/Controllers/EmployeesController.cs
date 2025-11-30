@@ -1,6 +1,7 @@
 ﻿using Citas.Application.Dto;
 using Citas.Application.Services;
 using Citas.Domain.Enums;
+using Citas.Domain.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +9,7 @@ namespace WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class EmployeeController(
+public class EmployeesController(
     EmployeeService _employeeService,
     IJwtTokenService _jwtService
   ) : BaseController
@@ -28,14 +29,20 @@ public class EmployeeController(
   public async Task<IActionResult> CreateEmployee([FromBody] EmployeeCreateDto newEmployee, CancellationToken ct)
   {
     var user = GetUserTokenFromClaims();
-    if (user == null)
-    {
-      return Unauthorized();
-    }
 
     var createdEmployee = await _employeeService.CreateOne(newEmployee, user, ct);
     var token = _jwtService.GenerateToken(createdEmployee);
     AppendTokenToCookies(token);
     return Created(string.Empty, createdEmployee);
+  }
+
+  [HttpGet]
+  [Authorize(Roles = nameof(ERolType.ADMINISTRATOR))]
+  public async Task<IActionResult> GetMyProfile(CancellationToken ct, [FromQuery] PaginationFilter filters)
+  {
+    var user = GetUserTokenFromClaims();
+
+    var employees = await _employeeService.GetAllEmployees(user, filters, ct);
+    return Ok(employees);
   }
 }

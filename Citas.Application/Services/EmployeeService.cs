@@ -3,6 +3,7 @@ using Citas.Application.Factories;
 using Citas.Domain.Entities;
 using Citas.Domain.Enums;
 using Citas.Domain.Exceptions;
+using Citas.Domain.Filters;
 using Citas.Domain.Repositories;
 
 namespace Citas.Application.Services;
@@ -103,5 +104,27 @@ public class EmployeeService(
     }
 
     return _employeeFactory.CreateToken(employee);
+  }
+
+  async public Task<List<EmployeeOverviewDto>> GetAllEmployees(UserTokenDto dto, PaginationFilter pagination, CancellationToken ct)
+  {
+    var currentUser = await _employeeRepository.FindById(dto.Id, ct);
+
+    if (currentUser == null)
+    {
+      throw new NotFoundException();
+    }
+
+    var employees = await _employeeRepository.FindAllByCompanyId(currentUser.Company.Id, pagination, ct);
+
+    return [.. employees.Select(e => new EmployeeOverviewDto
+    {
+      Id = e.Id,
+      FirstName = e.FirstName,
+      LastName = e.LastName,
+      Email = e.Email,
+      PhoneNumber = e.PhoneNumber ?? string.Empty,
+      Rol = e.Rol.Type.ToString()
+    })];
   }
 }

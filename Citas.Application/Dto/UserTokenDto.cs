@@ -9,5 +9,4 @@ public class UserTokenDto
   public string FirstName { get; set; } = null!;
   public string LastName { get; set; } = null!;
   public required ERolType Rol { get; set; }
-
 }
