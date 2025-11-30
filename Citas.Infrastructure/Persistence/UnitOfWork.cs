@@ -1,15 +1,14 @@
 using Citas.Domain.Repositories;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Citas.Infrastructure.Persistence;
 
 internal class UnitOfWork : IUnitOfWork
 {
-  private readonly DbContext _context;
+  private readonly CitasDbContext _context;
   private IDbContextTransaction? _transaction;
 
-  public UnitOfWork(DbContext context)
+  public UnitOfWork(CitasDbContext context)
   {
     _context = context;
   }
