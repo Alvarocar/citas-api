@@ -61,7 +61,7 @@ internal class Program
       app.UseSwaggerUI();
     }
 
-    app.UseCors("AllowClient");
+    app.UseCors("CorsPolicy");
 
     app.Run();
   }

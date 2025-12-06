@@ -13,12 +13,13 @@ public static class CorsSetup
 
     services.AddCors(options =>
     {
-      options.AddPolicy("AllowClient", policy =>
+      options.AddPolicy("CorsPolicy", policy =>
       {
-        policy.WithOrigins(origins)
+        policy
         .AllowAnyHeader()
         .AllowAnyMethod()
-        .AllowCredentials();
+        .AllowCredentials()
+        .WithOrigins(origins);
       });
     });
     return services;
