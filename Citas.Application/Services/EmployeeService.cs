@@ -51,7 +51,6 @@ public class EmployeeService(
       };
       _companyRepository.Add(newCompany);
       _employeeRepository.AttachRol(rol);
-      _employeeRepository.AttachCompany(newCompany);
       var newEmployee = _employeeFactory.CreateAdmin(dto, rol, newCompany);
       _employeeRepository.Add(newEmployee);
 

@@ -27,6 +27,9 @@ internal class Program
        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
      });
+
+    builder.Services.AddSwaggerGen();
+
     builder.Services.AddCitasSecurity(builder.Configuration);
 
     builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -51,6 +54,12 @@ internal class Program
     app.UseAuthorization();
 
     app.MapControllers();
+
+    if (app.Environment.IsDevelopment())
+    {
+      app.UseSwagger();
+      app.UseSwaggerUI();
+    }
 
     app.UseCors("AllowClient");
 
