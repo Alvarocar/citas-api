@@ -45,7 +45,7 @@ public class EmployeeRepository : BaseRepository<Employee, int>, IEmployeeReposi
 
   public Task<List<Employee>> FindAllByCompanyId(int company, PaginationFilter pagination, CancellationToken ct)
   {
-    var query = _set.Where(e => e.Company.Id == company);
+    var query = _set.Include(e => e.Rol).Where(e => e.Company.Id == company);
     return new PaginationSpecification<Employee>(pagination).Apply(query).ToListAsync(ct);
   }
 }
