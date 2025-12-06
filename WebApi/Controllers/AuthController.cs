@@ -1,5 +1,6 @@
 ﻿using Citas.Application.Dto;
 using Citas.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
@@ -18,5 +19,12 @@ public class AuthController(
     var token = _jwtService.GenerateToken(data);
     this.AppendTokenToCookies(token);
     return Accepted(string.Empty, data);
+  }
+
+  [HttpGet("check")]
+  [Authorize]
+  public async Task<bool> Check()
+  {
+    return true;
   }
 }
