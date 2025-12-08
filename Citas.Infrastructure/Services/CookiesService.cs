@@ -28,4 +28,9 @@ public class CookiesService
         }
     );
   }
+
+  public void DeleteTokenFromCookies(HttpResponse response)
+  {
+    response.Cookies.Delete("access_token");
+  }
 }

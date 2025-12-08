@@ -31,4 +31,11 @@ public class AuthController(
     var user = GetUserTokenFromClaims();
     return Accepted(string.Empty, user);
   }
+
+  [HttpDelete("logout")]
+  public IActionResult RemoveSession()
+  {
+    _cookiesService.DeleteTokenFromCookies(Response);
+    return NoContent();
+  }
 }
