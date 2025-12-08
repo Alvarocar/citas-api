@@ -49,6 +49,8 @@ internal class Program
 
     app.UseMiddleware<ErrorsMiddleware>();
 
+    app.UseCors("CorsPolicy");
+
     app.UseAuthentication();
 
     app.UseAuthorization();
@@ -61,7 +63,6 @@ internal class Program
       app.UseSwaggerUI();
     }
 
-    app.UseCors("CorsPolicy");
 
     app.Run();
   }

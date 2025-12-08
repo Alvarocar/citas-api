@@ -2,6 +2,7 @@
 using Citas.Application.Services;
 using Citas.Domain.Enums;
 using Citas.Domain.Filters;
+using Citas.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +12,8 @@ namespace WebApi.Controllers;
 [ApiController]
 public class EmployeesController(
     EmployeeService _employeeService,
-    IJwtTokenService _jwtService
+    IJwtTokenService _jwtService,
+    CookiesService _cookiesService
   ) : BaseController
 {
 
@@ -20,7 +22,7 @@ public class EmployeesController(
   {
     var newUser = await _employeeService.CreateOneAdmin(dto, ct);
     var token = _jwtService.GenerateToken(newUser);
-    AppendTokenToCookies(token);
+    _cookiesService.AppendTokenToCookies(Response, token);
     return Created(string.Empty, newUser);
   }
 
@@ -32,7 +34,7 @@ public class EmployeesController(
 
     var createdEmployee = await _employeeService.CreateOne(newEmployee, user, ct);
     var token = _jwtService.GenerateToken(createdEmployee);
-    AppendTokenToCookies(token);
+    _cookiesService.AppendTokenToCookies(Response, token);
     return Created(string.Empty, createdEmployee);
   }
 

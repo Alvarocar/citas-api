@@ -1,7 +1,9 @@
 ﻿using Citas.Application.Dto;
 using Citas.Application.Services;
+using Citas.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace WebApi.Controllers;
 
@@ -9,7 +11,8 @@ namespace WebApi.Controllers;
 [ApiController]
 public class AuthController(
     EmployeeService _employeeService,
-    IJwtTokenService _jwtService
+    IJwtTokenService _jwtService,
+    CookiesService _cookiesService
   ) : BaseController
 {
   [HttpPut("login")]
@@ -17,14 +20,15 @@ public class AuthController(
   {
     var data = await _employeeService.SignIn(employee, ct);
     var token = _jwtService.GenerateToken(data);
-    this.AppendTokenToCookies(token);
+    _cookiesService.AppendTokenToCookies(Response, token);
     return Accepted(string.Empty, data);
   }
 
   [HttpGet("check")]
   [Authorize]
-  public async Task<bool> Check()
+  public IActionResult Check()
   {
-    return true;
+    var user = GetUserTokenFromClaims();
+    return Accepted(string.Empty, user);
   }
 }

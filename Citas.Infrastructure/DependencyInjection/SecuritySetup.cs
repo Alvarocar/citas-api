@@ -44,6 +44,8 @@ public static class SecuritySetup
        };
      });
 
+    services.AddSingleton<CookiesService, CookiesService>();
+
     return services;
   }
 }

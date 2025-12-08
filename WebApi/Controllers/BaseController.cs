@@ -8,9 +8,10 @@ namespace WebApi.Controllers;
 
 public abstract class BaseController : ControllerBase
 {
+
   protected UserTokenDto GetUserTokenFromClaims()
   {
-    if (User?.Identity?.IsAuthenticated != true) return null;
+    if (User?.Identity?.IsAuthenticated != true) throw new NotAuthorizedException();
 
     try
     {
@@ -34,18 +35,17 @@ public abstract class BaseController : ControllerBase
     }
   }
 
-  protected void AppendTokenToCookies(string token)
+  protected bool TryToGetUserTokenFromClaims(out UserTokenDto? user)
   {
-    Response.Cookies.Append(
-      "access_token",
-      token,
-      new CookieOptions
-      {
-        HttpOnly = true,
-        Secure = true,
-        Expires = DateTime.UtcNow.AddHours(24),
-        SameSite = SameSiteMode.None,
-      }
-     );
+    try
+    {
+      user = GetUserTokenFromClaims();
+      return true;
+    }
+    catch
+    {
+      user = null;
+      return false;
+    }
   }
 }
