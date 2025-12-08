@@ -63,7 +63,7 @@ public class EmployeeService(
 
   async public Task<UserTokenDto> CreateOne(EmployeeCreateDto dto, UserTokenDto token, CancellationToken ct)
   {
-    var rol = await _rolRepository.FirstOrDefaultAsync(r => r.Type == dto.RolType, ct);
+    var rol = await _rolRepository.FirstOrDefaultAsync(r => r.Type == dto.RoleType, ct);
 
     if (rol == null)
     {
@@ -123,7 +123,7 @@ public class EmployeeService(
       LastName = e.LastName,
       Email = e.Email,
       PhoneNumber = e.PhoneNumber ?? string.Empty,
-      Rol = e.Rol.Type.ToString()
+      Role = e.Rol.Type.ToString()
     })];
   }
 }

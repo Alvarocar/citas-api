@@ -358,7 +358,7 @@ namespace Citas.Infrastructure.Migrations
                     b.ToTable("reservation", (string)null);
                 });
 
-            modelBuilder.Entity("Citas.Domain.Entities.Rol", b =>
+            modelBuilder.Entity("Citas.Domain.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -453,7 +453,7 @@ namespace Citas.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("position_id");
 
-                    b.HasOne("Citas.Domain.Entities.Rol", "Rol")
+                    b.HasOne("Citas.Domain.Entities.Role", "Role")
                         .WithMany()
                         .HasForeignKey("rol_id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -463,7 +463,7 @@ namespace Citas.Infrastructure.Migrations
 
                     b.Navigation("Position");
 
-                    b.Navigation("Rol");
+                    b.Navigation("Role");
 
                     b.Navigation("Schedule");
                 });

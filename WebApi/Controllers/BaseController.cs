@@ -26,7 +26,7 @@ public abstract class BaseController : ControllerBase
         Email = User.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty,
         FirstName = User.FindFirst(ClaimTypes.GivenName)?.Value ?? string.Empty,
         LastName = User.FindFirst(ClaimTypes.Surname)?.Value ?? string.Empty,
-        Rol = Enum.Parse<ERolType>(role.Value)
+        Role = Enum.Parse<ERolType>(role.Value)
       };
     }
     catch

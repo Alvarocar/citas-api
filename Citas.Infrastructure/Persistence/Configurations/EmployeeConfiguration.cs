@@ -54,7 +54,7 @@ internal class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         .HasColumnType("char(103)")
         .HasMaxLength(200);
 
-    // Rol relation (required) -> shadow fk rol_id
+    // Role relation (required) -> shadow fk rol_id
     builder.HasOne(x => x.Rol)
            .WithMany()
            .HasForeignKey("rol_id")

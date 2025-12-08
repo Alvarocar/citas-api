@@ -51,7 +51,7 @@ public class EmployeeFactory(
       FirstName = employee.FirstName,
       LastName = employee.LastName,
       Email = employee.Email!,
-      Rol = employee.Rol.Type,
+      Role = employee.Rol.Type,
     };
   }
 
@@ -81,7 +81,7 @@ public class EmployeeFactory(
         Email = email,
         FirstName = firstName,
         LastName = lastName,
-        Rol = rol,
+        Role = rol,
       };
     }
     catch
