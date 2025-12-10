@@ -95,5 +95,14 @@ namespace Citas.Domain.Resources {
                 return ResourceManager.GetString("NotFound", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a El empleado tiene citas activas, considere re asignarlas primero..
+        /// </summary>
+        internal static string ReservationAssignedException {
+            get {
+                return ResourceManager.GetString("ReservationAssignedException", resourceCulture);
+            }
+        }
     }
 }

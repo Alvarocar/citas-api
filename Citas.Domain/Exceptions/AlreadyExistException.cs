@@ -1,6 +1,5 @@
 ﻿namespace Citas.Domain.Exceptions;
 
-[Serializable]
 public class AlreadyExistException : CitasException
 {
 

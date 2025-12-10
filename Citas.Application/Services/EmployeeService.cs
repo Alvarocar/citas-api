@@ -14,6 +14,8 @@ public class EmployeeService(
     ICompanyRepository _companyRepository,
     IPasswordHasherService _passwordHasher,
     IEmployeeFactory _employeeFactory,
+    IReservationRepository _reservationRepository,
+    IEmployeeScheduleExceptionRepository _employeeScheduleExceptionRepository,
     IUnitOfWork _unitOfWork
   )
 {
@@ -125,5 +127,114 @@ public class EmployeeService(
       PhoneNumber = e.PhoneNumber ?? string.Empty,
       Role = e.Rol.Type.ToString()
     })];
+  }
+
+  async public Task<EmployeeOverviewDto?> GetById(int id, UserTokenDto token, CancellationToken ct)
+  {
+
+    var current = await _employeeRepository.FirstOrDefaultWithIncludesAsync(
+       e => e.Id == token.Id,
+       ct,
+       e => e.Company
+     );
+
+    if (current is null) return null;
+
+    switch (token.Role.ToString())
+    {
+      case nameof(ERolType.ADMINISTRATOR):
+        var employee = await _employeeRepository.FirstOrDefaultWithIncludesAsync(e => e.Id == current.Id && e.Company.Id == current.Company.Id, ct, e => e.Rol);
+
+        if (employee is null) return null;
+
+        return new EmployeeOverviewDto
+        {
+          Id = employee.Id,
+          FirstName = employee.FirstName,
+          LastName = employee.LastName,
+          Email = employee.Email,
+          PhoneNumber = employee.PhoneNumber ?? string.Empty,
+          Role = employee.Rol.Type.ToString()
+        };
+      // the employee just can get himself record.  
+      case nameof(ERolType.EMPLOYEE):
+        if (id != current.Id) return null;
+
+        var employeeSelf = await _employeeRepository.FirstOrDefaultWithIncludesAsync(
+          e => e.Id == current.Id,
+          ct,
+          e => e.Rol
+        );
+
+        if (employeeSelf is null) return null;
+
+        return new EmployeeOverviewDto
+        {
+          Id = employeeSelf.Id,
+          FirstName = employeeSelf.FirstName,
+          LastName = employeeSelf.LastName,
+          Email = employeeSelf.Email,
+          PhoneNumber = employeeSelf.PhoneNumber ?? string.Empty,
+          Role = employeeSelf.Rol.Type.ToString()
+        };
+      default:
+        return null;
+    }
+  }
+
+  async public Task DeleteById(int id, UserTokenDto token, CancellationToken ct)
+  {
+
+    var current = await _employeeRepository.FirstOrDefaultWithIncludesAsync(
+      e => e.Id == token.Id,
+      ct,
+      e => e.Company
+    );
+
+    if (current is null) throw new NotFoundException();
+
+    var employee = await _employeeRepository.FirstOrDefaultWithIncludesAsync(e => e.Id == id && e.Company.Id == current.Company.Id, ct, e => e.Rol);
+
+    if (employee is null) throw new NotFoundException("Empleado no encontrado");
+
+    var reservations = await _reservationRepository.FindAsync(re => re.Employee.Id == employee.Id, ct);
+
+    if (reservations is null || reservations.Any()) throw new ReservationAssignedException();
+
+
+    if (token.Role == ERolType.ADMINISTRATOR)
+    {
+      await _unitOfWork.BeginTransactionAsync(ct);
+
+      _employeeScheduleExceptionRepository.FindAsync(re => re.Employee.Id == id, ct)
+        .ContinueWith(t =>
+        {
+          var exceptions = t.Result;
+          foreach (var exception in exceptions)
+          {
+            _employeeScheduleExceptionRepository.Delete(exception);
+          }
+        }, ct).Wait(ct);
+
+      _employeeRepository.Delete(employee);
+      await _employeeRepository.SaveChangesAsync(ct);
+      return;
+    }
+    if (token.Role == ERolType.EMPLOYEE && id == current.Id)
+    {
+      _employeeScheduleExceptionRepository.FindAsync(re => re.Employee.Id == current.Id, ct)
+        .ContinueWith(t =>
+        {
+          var exceptions = t.Result;
+          foreach (var exception in exceptions)
+          {
+            _employeeScheduleExceptionRepository.Delete(exception);
+          }
+        }, ct).Wait(ct);
+      _employeeRepository.Delete(current);
+      await _employeeRepository.SaveChangesAsync(ct);
+      return;
+    }
+    throw new NotFoundException("Empleado no encontrado");
   }
 }
