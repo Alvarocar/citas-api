@@ -13,5 +13,5 @@ public interface IEmployeeRepository : IRepository<Employee, int>
 
   Task<Employee?> FindById(int id, CancellationToken ct);
 
-  Task<List<Employee>> FindAllByCompanyId(int company, PaginationFilter pagination, CancellationToken ct);
+  Task<List<Employee>> FindAllByCompanyId(Employee employee, PaginationFilter pagination, CancellationToken ct);
 }

@@ -36,16 +36,9 @@ public class EmployeeRepository : BaseRepository<Employee, int>, IEmployeeReposi
       .FirstOrDefaultAsync(ct);
   }
 
-  public Task<List<Employee>> FindAllByCompanyId(int company, CancellationToken ct)
+  public Task<List<Employee>> FindAllByCompanyId(Employee employee, PaginationFilter pagination, CancellationToken ct)
   {
-    return _set.Where(e => e.Company.Id == company)
-      .Include(e => e.Rol)
-      .ToListAsync(ct);
-  }
-
-  public Task<List<Employee>> FindAllByCompanyId(int company, PaginationFilter pagination, CancellationToken ct)
-  {
-    var query = _set.Include(e => e.Rol).Where(e => e.Company.Id == company);
+    var query = _set.Include(e => e.Rol).Where(e => e.Company.Id == employee.Company.Id && e.Id != employee.Id);
     return new PaginationSpecification<Employee>(pagination).Apply(query).ToListAsync(ct);
   }
 }
