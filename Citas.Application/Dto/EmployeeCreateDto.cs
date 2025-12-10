@@ -16,5 +16,5 @@ public class EmployeeCreateDto
   public required string PhoneNumber { get; set; }
   [Required(ErrorMessageResourceType = typeof(Resources.Validations), ErrorMessageResourceName = "Required")]
   [EnumDataType(typeof(ERolType), ErrorMessageResourceType = typeof(Resources.Validations), ErrorMessageResourceName = "Invalid")]
-  public required ERolType RoleType { get; set; }
+  public required ERolType Role { get; set; }
 }

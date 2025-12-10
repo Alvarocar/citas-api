@@ -124,7 +124,7 @@
     <value>Valor no valido</value>
   </data>
   <data name="Max" xml:space="preserve">
-    <value>El campo no puede tener más de 30 caracteres.</value>
+    <value>El campo no puede tener más de {1} caracteres.</value>
   </data>
   <data name="Required" xml:space="preserve">
     <value>El campo es requerido</value>

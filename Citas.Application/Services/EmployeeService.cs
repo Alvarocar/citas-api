@@ -65,7 +65,7 @@ public class EmployeeService(
 
   async public Task<UserTokenDto> CreateOne(EmployeeCreateDto dto, UserTokenDto token, CancellationToken ct)
   {
-    var rol = await _rolRepository.FirstOrDefaultAsync(r => r.Type == dto.RoleType, ct);
+    var rol = await _rolRepository.FirstOrDefaultAsync(r => r.Type == dto.Role, ct);
 
     if (rol == null)
     {
@@ -116,7 +116,7 @@ public class EmployeeService(
       throw new NotFoundException();
     }
 
-    var employees = await _employeeRepository.FindAllByCompanyId(currentUser.Company.Id, pagination, ct);
+    var employees = await _employeeRepository.FindAllByCompanyId(currentUser, pagination, ct);
 
     return [.. employees.Select(e => new EmployeeOverviewDto
     {
@@ -143,7 +143,7 @@ public class EmployeeService(
     switch (token.Role.ToString())
     {
       case nameof(ERolType.ADMINISTRATOR):
-        var employee = await _employeeRepository.FirstOrDefaultWithIncludesAsync(e => e.Id == current.Id && e.Company.Id == current.Company.Id, ct, e => e.Rol);
+        var employee = await _employeeRepository.FirstOrDefaultWithIncludesAsync(e => e.Id == id && e.Company.Id == current.Company.Id, ct, e => e.Rol);
 
         if (employee is null) return null;
 
@@ -182,6 +182,45 @@ public class EmployeeService(
     }
   }
 
+  async public Task<EmployeeOverviewDto> Update(UserTokenDto token, EmployeeUpdateDto employee, int id, CancellationToken ct)
+  {
+    var current = await _employeeRepository.FirstOrDefaultWithIncludesAsync(
+      e => e.Id == token.Id,
+      ct,
+      e => e.Company
+    );
+
+    if (current is null) throw new NotFoundException();
+
+    var existingEmployee = await _employeeRepository.FirstOrDefaultWithIncludesAsync(e => e.Id == id && e.Company.Id == current.Company.Id, ct, e => e.Rol);
+
+    if (existingEmployee is null) throw new NotFoundException("Empleado no encontrado");
+
+    existingEmployee.FirstName = employee.Firstname;
+    existingEmployee.LastName = employee.Lastname;
+    existingEmployee.PhoneNumber = employee.PhoneNumber;
+    // in case of email change, we need to check if the new email is already taken and make some validations and excecutions
+    existingEmployee.Email = employee.Email;
+
+    if (!existingEmployee.Rol.Type.ToString().Equals(employee.Role.ToString()))
+    {
+      existingEmployee.Rol = await _rolRepository.FirstOrDefaultAsync(r => r.Type == employee.Role, ct)
+        ?? throw new NotFoundException("Rol no encontrado");
+    }
+
+    await _employeeRepository.SaveChangesAsync(ct);
+
+    return new EmployeeOverviewDto
+    {
+      Id = existingEmployee.Id,
+      FirstName = existingEmployee.FirstName,
+      LastName = existingEmployee.LastName,
+      Email = existingEmployee.Email,
+      PhoneNumber = existingEmployee.PhoneNumber ?? string.Empty,
+      Role = existingEmployee.Rol.Type.ToString()
+    };
+  }
+
   async public Task DeleteById(int id, UserTokenDto token, CancellationToken ct)
   {
 
@@ -204,21 +243,26 @@ public class EmployeeService(
 
     if (token.Role == ERolType.ADMINISTRATOR)
     {
-      await _unitOfWork.BeginTransactionAsync(ct);
+      using (_unitOfWork)
+      {
+        await _unitOfWork.BeginTransactionAsync(ct);
 
-      _employeeScheduleExceptionRepository.FindAsync(re => re.Employee.Id == id, ct)
-        .ContinueWith(t =>
-        {
-          var exceptions = t.Result;
-          foreach (var exception in exceptions)
+        _employeeScheduleExceptionRepository.FindAsync(re => re.Employee.Id == id, ct)
+          .ContinueWith(t =>
           {
-            _employeeScheduleExceptionRepository.Delete(exception);
-          }
-        }, ct).Wait(ct);
+            var exceptions = t.Result;
+            foreach (var exception in exceptions)
+            {
+              _employeeScheduleExceptionRepository.Delete(exception);
+            }
+          }, ct).Wait(ct);
 
-      _employeeRepository.Delete(employee);
-      await _employeeRepository.SaveChangesAsync(ct);
-      return;
+        _employeeRepository.Delete(employee);
+
+        await _unitOfWork.SaveChangesAsync(ct);
+        await _unitOfWork.CommitTransactionAsync(ct);
+        return;
+      }
     }
     if (token.Role == ERolType.EMPLOYEE && id == current.Id)
     {

@@ -79,7 +79,7 @@ namespace Citas.Application.Resources {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a El campo no puede tener más de 30 caracteres..
+        ///   Busca una cadena traducida similar a El campo no puede tener más de {1} caracteres..
         /// </summary>
         internal static string Max {
             get {

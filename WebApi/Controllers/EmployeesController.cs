@@ -34,7 +34,6 @@ public class EmployeesController(
 
     var createdEmployee = await _employeeService.CreateOne(newEmployee, user, ct);
     var token = _jwtService.GenerateToken(createdEmployee);
-    _cookiesService.AppendTokenToCookies(Response, token);
     return Created(string.Empty, createdEmployee);
   }
 
@@ -61,6 +60,14 @@ public class EmployeesController(
     }
 
     return Ok(employee);
+  }
+
+  [HttpPut("{id}")]
+  public async Task<IActionResult> Update(int id, [FromBody] EmployeeUpdateDto dto, CancellationToken ct)
+  {
+    var user = GetUserTokenFromClaims();
+    var updatedEmployee = await _employeeService.Update(user, dto, id, ct);
+    return Ok(updatedEmployee);
   }
 
   /// <summary>
