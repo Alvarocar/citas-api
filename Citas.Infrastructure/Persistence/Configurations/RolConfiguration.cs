@@ -1,5 +1,4 @@
 using Citas.Domain.Entities;
-using Citas.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -21,10 +20,5 @@ internal class RolConfiguration : IEntityTypeConfiguration<Rol>
         .HasColumnName("name")
         .HasColumnType("varchar(100)")
         .HasMaxLength(100);
-
-    builder.Property(x => x.Type)
-        .HasColumnName("type")
-        .HasColumnType<ERolType>("enum__rol")
-        .IsRequired();
   }
 }

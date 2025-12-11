@@ -1,4 +1,4 @@
-﻿using Citas.Domain.Enums;
+﻿using Citas.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
 
 namespace Citas.Application.Dto;
@@ -15,6 +15,6 @@ public class EmployeeCreateDto
   [MaxLength(10, ErrorMessageResourceType = typeof(Resources.Validations), ErrorMessageResourceName = "Max")]
   public required string PhoneNumber { get; set; }
   [Required(ErrorMessageResourceType = typeof(Resources.Validations), ErrorMessageResourceName = "Required")]
-  [EnumDataType(typeof(ERolType), ErrorMessageResourceType = typeof(Resources.Validations), ErrorMessageResourceName = "Invalid")]
-  public required ERolType Role { get; set; }
+  [AllowedValues([Rol.Employee, Rol.Administrator], ErrorMessageResourceType = typeof(Resources.Validations), ErrorMessageResourceName = "Invalid")]
+  public required string Role { get; set; }
 }

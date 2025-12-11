@@ -24,7 +24,6 @@ namespace Citas.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "enum__day", new[] { "friday", "monday", "saturday", "sunday", "thursday", "tuesday", "wednesday" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "enum__reservation_state", new[] { "cancelled", "completed", "confirmed", "pending" });
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "enum__rol", new[] { "administrator", "employee" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Citas.Domain.Entities.Client", b =>
@@ -356,7 +355,7 @@ namespace Citas.Infrastructure.Migrations
                     b.ToTable("reservation", (string)null);
                 });
 
-            modelBuilder.Entity("Citas.Domain.Entities.Role", b =>
+            modelBuilder.Entity("Citas.Domain.Entities.Rol", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -370,10 +369,6 @@ namespace Citas.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)")
                         .HasColumnName("name");
-
-                    b.Property<ERolType>("Type")
-                        .HasColumnType("enum__rol")
-                        .HasColumnName("type");
 
                     b.HasKey("Id");
 
@@ -435,7 +430,7 @@ namespace Citas.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("position_id");
 
-                    b.HasOne("Citas.Domain.Entities.Role", "Role")
+                    b.HasOne("Citas.Domain.Entities.Rol", "Rol")
                         .WithMany()
                         .HasForeignKey("rol_id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -445,7 +440,7 @@ namespace Citas.Infrastructure.Migrations
 
                     b.Navigation("Position");
 
-                    b.Navigation("Role");
+                    b.Navigation("Rol");
 
                     b.Navigation("Schedule");
                 });

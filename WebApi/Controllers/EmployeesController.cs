@@ -1,6 +1,6 @@
 ﻿using Citas.Application.Dto;
 using Citas.Application.Services;
-using Citas.Domain.Enums;
+using Citas.Domain.Entities;
 using Citas.Domain.Filters;
 using Citas.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +11,7 @@ namespace WebApi.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class EmployeesController(
-    EmployeeService _employeeService,
+    Citas.Application.Services.EmployeeService _employeeService,
     IJwtTokenService _jwtService,
     CookiesService _cookiesService
   ) : BaseController
@@ -27,7 +27,7 @@ public class EmployeesController(
   }
 
   [HttpPost]
-  [Authorize(Roles = nameof(ERolType.ADMINISTRATOR))]
+  [Authorize(Roles = Rol.Administrator)]
   public async Task<IActionResult> CreateEmployee([FromBody] EmployeeCreateDto newEmployee, CancellationToken ct)
   {
     var user = GetUserTokenFromClaims();
@@ -38,7 +38,7 @@ public class EmployeesController(
   }
 
   [HttpGet]
-  [Authorize(Roles = nameof(ERolType.ADMINISTRATOR))]
+  [Authorize(Roles = Rol.Administrator)]
   public async Task<IActionResult> GetAllEmployees(CancellationToken ct, [FromQuery] PaginationFilter filters)
   {
     var user = GetUserTokenFromClaims();
@@ -48,7 +48,7 @@ public class EmployeesController(
   }
 
   [HttpGet("{id}")]
-  [Authorize(Roles = $"{nameof(ERolType.EMPLOYEE)},{nameof(ERolType.ADMINISTRATOR)}")]
+  [Authorize(Roles = $"{Rol.Administrator},${Rol.Employee}")]
   public async Task<IActionResult> GetById(int id, CancellationToken ct)
   {
     var user = GetUserTokenFromClaims();
@@ -79,7 +79,7 @@ public class EmployeesController(
   /// <response code="409">The employee can not be deleted because has associated records that prevent its deletion</response>
   /// 
   [HttpDelete("{id}")]
-  [Authorize(Roles = nameof(ERolType.ADMINISTRATOR))]
+  [Authorize(Roles = Rol.Administrator)]
   public async Task<IActionResult> Delete(int id, CancellationToken ct)
   {
     var user = GetUserTokenFromClaims();

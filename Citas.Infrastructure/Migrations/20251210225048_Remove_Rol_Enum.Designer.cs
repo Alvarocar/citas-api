@@ -14,8 +14,8 @@ using NpgsqlTypes;
 namespace Citas.Infrastructure.Migrations
 {
     [DbContext(typeof(CitasDbContext))]
-    [Migration("20251110174406_MakeScheduleNullableForEmployee")]
-    partial class MakeScheduleNullableForEmployee
+    [Migration("20251210225048_Remove_Rol_Enum")]
+    partial class Remove_Rol_Enum
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,7 +27,6 @@ namespace Citas.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "enum__day", new[] { "friday", "monday", "saturday", "sunday", "thursday", "tuesday", "wednesday" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "enum__reservation_state", new[] { "cancelled", "completed", "confirmed", "pending" });
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "enum__rol", new[] { "administrator", "employee" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Citas.Domain.Entities.Client", b =>
@@ -359,7 +358,7 @@ namespace Citas.Infrastructure.Migrations
                     b.ToTable("reservation", (string)null);
                 });
 
-            modelBuilder.Entity("Citas.Domain.Entities.Role", b =>
+            modelBuilder.Entity("Citas.Domain.Entities.Rol", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -434,7 +433,7 @@ namespace Citas.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("position_id");
 
-                    b.HasOne("Citas.Domain.Entities.Role", "Role")
+                    b.HasOne("Citas.Domain.Entities.Rol", "Rol")
                         .WithMany()
                         .HasForeignKey("rol_id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -444,7 +443,7 @@ namespace Citas.Infrastructure.Migrations
 
                     b.Navigation("Position");
 
-                    b.Navigation("Role");
+                    b.Navigation("Rol");
 
                     b.Navigation("Schedule");
                 });

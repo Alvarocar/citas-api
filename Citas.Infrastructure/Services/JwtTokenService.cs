@@ -24,7 +24,7 @@ public class JwtTokenService(
       new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
       new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
       new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName),
-      new Claim(ClaimTypes.Role, user.Role.ToString())
+      new Claim(ClaimTypes.Role, user.Role)
     };
 
     if (audiences != null)

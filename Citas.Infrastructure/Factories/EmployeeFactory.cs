@@ -2,7 +2,6 @@
 using Citas.Application.Factories;
 using Citas.Application.Services;
 using Citas.Domain.Entities;
-using Citas.Domain.Enums;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -51,7 +50,7 @@ public class EmployeeFactory(
       FirstName = employee.FirstName,
       LastName = employee.LastName,
       Email = employee.Email!,
-      Role = employee.Rol.Type,
+      Role = employee.Rol.Name,
     };
   }
 
@@ -73,7 +72,7 @@ public class EmployeeFactory(
       var firstName = token.Claims.First(c => c.Type == "firstName").Value;
       var lastName = token.Claims.First(c => c.Type == "lastName").Value;
 
-      var rol = Enum.Parse<ERolType>(token.Claims.First(c => c.Type == ClaimTypes.Role).Value);
+      var rol = token.Claims.First(c => c.Type == ClaimTypes.Role).Value;
 
       return new UserTokenDto
       {

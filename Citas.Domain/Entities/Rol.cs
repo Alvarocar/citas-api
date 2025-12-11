@@ -1,17 +1,22 @@
-﻿using Citas.Domain.Enums;
-
-namespace Citas.Domain.Entities
+﻿namespace Citas.Domain.Entities
 {
-    /**<summary>
-     * Represents a role within the system.
-     * </summary>
-     */
-    public class Rol
-    {
-        public int Id { get; set; }
+  /**<summary>
+   * Represents a role within the system.
+   * </summary>
+   */
+  public class Rol
+  {
+    public const int AdministratorId = 1;
+    public const string Administrator = "ADMINISTRATOR";
 
-        public required string Name { get; set; }
+    public const int EmployeeId = 2;
+    public const string Employee = "EMPLOYEE";
 
-        public ERolType Type { get; set; }
-    }
+    public const int SuperAdministratorId = 3;
+    public const string SuperAdministrator = "SUPER_ADMINISTRATOR";
+
+    public int Id { get; set; }
+
+    public required string Name { get; set; }
+  }
 }

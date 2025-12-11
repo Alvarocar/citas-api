@@ -1,7 +1,6 @@
 ﻿using Citas.Application.Dto;
 using Citas.Application.Factories;
 using Citas.Domain.Entities;
-using Citas.Domain.Enums;
 using Citas.Domain.Exceptions;
 using Citas.Domain.Filters;
 using Citas.Domain.Repositories;
@@ -33,7 +32,7 @@ public class EmployeeService(
       throw new AlreadyExistException(Resources.Errors.EmployeeEmailAlreadyExists);
     }
 
-    var rol = await _rolRepository.FirstOrDefaultAsync(r => r.Type == ERolType.ADMINISTRATOR, ct);
+    var rol = await _rolRepository.FirstOrDefaultAsync(r => r.Id == Rol.SuperAdministratorId, ct);
 
 
     if (rol == null)
@@ -65,7 +64,7 @@ public class EmployeeService(
 
   async public Task<UserTokenDto> CreateOne(EmployeeCreateDto dto, UserTokenDto token, CancellationToken ct)
   {
-    var rol = await _rolRepository.FirstOrDefaultAsync(r => r.Type == dto.Role, ct);
+    var rol = await _rolRepository.FirstOrDefaultAsync(r => r.Name == dto.Role, ct);
 
     if (rol == null)
     {
@@ -125,7 +124,7 @@ public class EmployeeService(
       LastName = e.LastName,
       Email = e.Email,
       PhoneNumber = e.PhoneNumber ?? string.Empty,
-      Role = e.Rol.Type.ToString()
+      Role = e.Rol.Name,
     })];
   }
 
@@ -142,7 +141,8 @@ public class EmployeeService(
 
     switch (token.Role.ToString())
     {
-      case nameof(ERolType.ADMINISTRATOR):
+      case Rol.SuperAdministrator:
+      case Rol.Administrator:
         var employee = await _employeeRepository.FirstOrDefaultWithIncludesAsync(e => e.Id == id && e.Company.Id == current.Company.Id, ct, e => e.Rol);
 
         if (employee is null) return null;
@@ -154,10 +154,10 @@ public class EmployeeService(
           LastName = employee.LastName,
           Email = employee.Email,
           PhoneNumber = employee.PhoneNumber ?? string.Empty,
-          Role = employee.Rol.Type.ToString()
+          Role = employee.Rol.Name,
         };
       // the employee just can get himself record.  
-      case nameof(ERolType.EMPLOYEE):
+      case Rol.Employee:
         if (id != current.Id) return null;
 
         var employeeSelf = await _employeeRepository.FirstOrDefaultWithIncludesAsync(
@@ -175,7 +175,7 @@ public class EmployeeService(
           LastName = employeeSelf.LastName,
           Email = employeeSelf.Email,
           PhoneNumber = employeeSelf.PhoneNumber ?? string.Empty,
-          Role = employeeSelf.Rol.Type.ToString()
+          Role = employeeSelf.Rol.Name
         };
       default:
         return null;
@@ -202,9 +202,9 @@ public class EmployeeService(
     // in case of email change, we need to check if the new email is already taken and make some validations and excecutions
     existingEmployee.Email = employee.Email;
 
-    if (!existingEmployee.Rol.Type.ToString().Equals(employee.Role.ToString()))
+    if (!existingEmployee.Rol.Name.Equals(employee.Role.ToString()))
     {
-      existingEmployee.Rol = await _rolRepository.FirstOrDefaultAsync(r => r.Type == employee.Role, ct)
+      existingEmployee.Rol = await _rolRepository.FirstOrDefaultAsync(r => r.Name == employee.Role, ct)
         ?? throw new NotFoundException("Rol no encontrado");
     }
 
@@ -217,7 +217,7 @@ public class EmployeeService(
       LastName = existingEmployee.LastName,
       Email = existingEmployee.Email,
       PhoneNumber = existingEmployee.PhoneNumber ?? string.Empty,
-      Role = existingEmployee.Rol.Type.ToString()
+      Role = existingEmployee.Rol.Name
     };
   }
 
@@ -241,7 +241,7 @@ public class EmployeeService(
     if (reservations is null || reservations.Any()) throw new ReservationAssignedException();
 
 
-    if (token.Role == ERolType.ADMINISTRATOR)
+    if (token.Role == Rol.Administrator)
     {
       using (_unitOfWork)
       {
@@ -264,7 +264,7 @@ public class EmployeeService(
         return;
       }
     }
-    if (token.Role == ERolType.EMPLOYEE && id == current.Id)
+    if (token.Role == Rol.Employee && id == current.Id)
     {
       _employeeScheduleExceptionRepository.FindAsync(re => re.Employee.Id == current.Id, ct)
         .ContinueWith(t =>

@@ -374,10 +374,6 @@ namespace Citas.Infrastructure.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("name");
 
-                    b.Property<ERolType>("Type")
-                        .HasColumnType("enum__rol")
-                        .HasColumnName("type");
-
                     b.HasKey("Id");
 
                     b.ToTable("rol", (string)null);

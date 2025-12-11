@@ -1,5 +1,4 @@
 ﻿using Citas.Application.Dto;
-using Citas.Domain.Enums;
 using Citas.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -26,7 +25,7 @@ public abstract class BaseController : ControllerBase
         Email = User.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty,
         FirstName = User.FindFirst(ClaimTypes.GivenName)?.Value ?? string.Empty,
         LastName = User.FindFirst(ClaimTypes.Surname)?.Value ?? string.Empty,
-        Role = Enum.Parse<ERolType>(role.Value)
+        Role = role.Value ?? string.Empty,
       };
     }
     catch

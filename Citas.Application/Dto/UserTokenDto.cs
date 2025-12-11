@@ -1,6 +1,4 @@
-﻿using Citas.Domain.Enums;
-
-namespace Citas.Application.Dto;
+﻿namespace Citas.Application.Dto;
 
 public class UserTokenDto
 {
@@ -8,5 +6,5 @@ public class UserTokenDto
   public string? Email { get; set; } = null!;
   public string FirstName { get; set; } = null!;
   public string LastName { get; set; } = null!;
-  public required ERolType Role { get; set; }
+  public required string Role { get; set; }
 }
