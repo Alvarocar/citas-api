@@ -13,7 +13,6 @@ namespace WebApi.Controllers;
 public class ServicesController(IServiceService _serviceService) : BaseController
 {
     [HttpPost]
-    [Authorize(Roles = nameof(ERolType.ADMINISTRATOR))]
     public async Task<IActionResult> Create(ServiceCreateDto dto, CancellationToken ct)
     {
         var user = GetUserTokenFromClaims();
