@@ -70,6 +70,15 @@ namespace Citas.Domain.Resources {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a Acción no permitida. No se tienen los sufientes permisos.
+        /// </summary>
+        internal static string Forbidden {
+            get {
+                return ResourceManager.GetString("Forbidden", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a Hubo un error interno.
         /// </summary>
         internal static string InternalError {

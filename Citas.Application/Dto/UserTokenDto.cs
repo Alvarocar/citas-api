@@ -7,4 +7,5 @@ public class UserTokenDto
   public string FirstName { get; set; } = null!;
   public string LastName { get; set; } = null!;
   public required string Role { get; set; }
+  public int CompanyId { get; set; }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 namespace Citas.Infrastructure.DependencyInjection;
@@ -14,6 +15,8 @@ public static class SecuritySetup
   {
 
     services.AddScoped<IJwtTokenService, JwtTokenService>();
+
+    JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
     services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
      .AddJwtBearer(options =>

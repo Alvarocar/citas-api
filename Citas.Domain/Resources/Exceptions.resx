@@ -132,4 +132,7 @@
   <data name="ReservationAssignedException" xml:space="preserve">
     <value>El empleado tiene citas activas, considere re asignarlas primero.</value>
   </data>
+  <data name="Forbidden" xml:space="preserve">
+    <value>Acción no permitida. No se tienen los sufientes permisos</value>
+  </data>
 </root>

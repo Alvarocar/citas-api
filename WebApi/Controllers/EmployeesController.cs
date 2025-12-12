@@ -27,7 +27,7 @@ public class EmployeesController(
   }
 
   [HttpPost]
-  [Authorize(Roles = Rol.Administrator)]
+  [Authorize(Roles = $"{Rol.Administrator},{Rol.SuperAdministrator}")]
   public async Task<IActionResult> CreateEmployee([FromBody] EmployeeCreateDto newEmployee, CancellationToken ct)
   {
     var user = GetUserTokenFromClaims();
@@ -38,7 +38,7 @@ public class EmployeesController(
   }
 
   [HttpGet]
-  [Authorize(Roles = Rol.Administrator)]
+  [Authorize(Roles = $"{Rol.Administrator},{Rol.SuperAdministrator}")]
   public async Task<IActionResult> GetAllEmployees(CancellationToken ct, [FromQuery] PaginationFilter filters)
   {
     var user = GetUserTokenFromClaims();
@@ -48,7 +48,7 @@ public class EmployeesController(
   }
 
   [HttpGet("{id}")]
-  [Authorize(Roles = $"{Rol.Administrator},${Rol.Employee}")]
+  [Authorize(Roles = $"{Rol.SuperAdministrator},{Rol.Administrator},${Rol.Employee}")]
   public async Task<IActionResult> GetById(int id, CancellationToken ct)
   {
     var user = GetUserTokenFromClaims();
@@ -79,7 +79,7 @@ public class EmployeesController(
   /// <response code="409">The employee can not be deleted because has associated records that prevent its deletion</response>
   /// 
   [HttpDelete("{id}")]
-  [Authorize(Roles = Rol.Administrator)]
+  [Authorize(Roles = $"{Rol.Administrator},{Rol.SuperAdministrator}")]
   public async Task<IActionResult> Delete(int id, CancellationToken ct)
   {
     var user = GetUserTokenFromClaims();

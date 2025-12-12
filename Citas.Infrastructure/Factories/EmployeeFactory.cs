@@ -51,6 +51,7 @@ public class EmployeeFactory(
       LastName = employee.LastName,
       Email = employee.Email!,
       Role = employee.Rol.Name,
+      CompanyId = employee.Company.Id,
     };
   }
 
@@ -73,6 +74,7 @@ public class EmployeeFactory(
       var lastName = token.Claims.First(c => c.Type == "lastName").Value;
 
       var rol = token.Claims.First(c => c.Type == ClaimTypes.Role).Value;
+      var companyId = int.Parse(token.Claims.First(c => c.Type == "companyId").Value);
 
       return new UserTokenDto
       {
@@ -81,6 +83,7 @@ public class EmployeeFactory(
         FirstName = firstName,
         LastName = lastName,
         Role = rol,
+        CompanyId = companyId,
       };
     }
     catch

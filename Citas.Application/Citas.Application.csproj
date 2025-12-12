@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Employees\NewFolder\**" />
+    <EmbeddedResource Remove="Employees\NewFolder\**" />
+    <None Remove="Employees\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Citas.Domain\Citas.Domain.csproj" />
   </ItemGroup>
 

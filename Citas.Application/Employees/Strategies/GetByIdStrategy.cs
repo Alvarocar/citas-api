@@ -9,6 +9,8 @@ internal interface IEmployeeGetByIdStrategy
   Task<EmployeeOverviewDto?> ExecuteAsync(int id, CancellationToken cancellationToken);
 }
 
+// TODO: this need to be moved to a service.
+
 /// <summary>
 /// 
 /// </summary>

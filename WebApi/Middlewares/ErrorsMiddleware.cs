@@ -28,6 +28,7 @@ internal class ErrorsMiddleware
         NotFoundException => StatusCodes.Status404NotFound,
         NotAuthorizedException => StatusCodes.Status401Unauthorized,
         ReservationAssignedException => StatusCodes.Status409Conflict,
+        ForbiddenException => StatusCodes.Status403Forbidden,
         CitasInternalException => StatusCodes.Status500InternalServerError,
         CitasException => StatusCodes.Status400BadRequest,
         _ => StatusCodes.Status400BadRequest

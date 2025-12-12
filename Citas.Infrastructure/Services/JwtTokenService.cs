@@ -1,6 +1,7 @@
 ﻿using Citas.Application.Dto;
 using Citas.Application.Factories;
 using Citas.Application.Services;
+using Citas.Infrastructure.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -20,16 +21,17 @@ public class JwtTokenService(
 
     var claims = new List<Claim>
     {
-      new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-      new Claim(JwtRegisteredClaimNames.Email, user.Email ?? ""),
-      new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
-      new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName),
-      new Claim(ClaimTypes.Role, user.Role)
+      new(CitasClaims.Id, user.Id.ToString()),
+      new(CitasClaims.Email, user.Email ?? ""),
+      new(CitasClaims.FirstName, user.FirstName),
+      new(CitasClaims.LastName, user.LastName),
+      new(CitasClaims.Role, user.Role),
+      new(CitasClaims.CompanyId, user.CompanyId.ToString())
     };
 
     if (audiences != null)
     {
-      claims.AddRange(audiences.Select(aud => new Claim(JwtRegisteredClaimNames.Aud, aud)));
+      claims.AddRange(audiences.Select(aud => new Claim(CitasClaims.Audience, aud)));
     }
 
     var descriptor = new SecurityTokenDescriptor

@@ -65,27 +65,16 @@ public class EmployeeService(
 
   async public Task<UserTokenDto> CreateOne(EmployeeCreateDto dto, UserTokenDto token, CancellationToken ct)
   {
-    var rol = await _rolRepository.FirstOrDefaultAsync(r => r.Name == dto.Role, ct);
+    var strategy = new EmployeeCreateOneStrategyFactory(
+        employeeRepository: _employeeRepository,
+        rolRepository: _rolRepository,
+        companyRepository: _companyRepository,
+        factory: _employeeFactory
+      ).GetStrategy(token);
 
-    if (rol == null)
-    {
-      throw new CitasInternalException();
-    }
+    if (strategy is null) throw new ForbiddenException();
 
-    var currentUser = await _employeeRepository.FirstOrDefaultWithIncludesAsync(
-      e => e.Id == token.Id,
-      ct,
-      e => e.Company
-    );
-
-    _employeeRepository.AttachRol(rol);
-    _employeeRepository.AttachCompany(currentUser!.Company);
-
-    var employee = _employeeFactory.Create(dto, rol, currentUser.Company);
-
-    _employeeRepository.Add(employee);
-
-    await _employeeRepository.SaveChangesAsync();
+    var employee = await strategy.ExecuteAsync(dto, ct);
 
     return _employeeFactory.CreateToken(employee);
   }
