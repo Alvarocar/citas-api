@@ -1,4 +1,5 @@
 ﻿using Citas.Application.Dto;
+using Citas.Application.Employees.Strategies;
 using Citas.Application.Factories;
 using Citas.Domain.Entities;
 using Citas.Domain.Exceptions;
@@ -131,55 +132,15 @@ public class EmployeeService(
   async public Task<EmployeeOverviewDto?> GetById(int id, UserTokenDto token, CancellationToken ct)
   {
 
-    var current = await _employeeRepository.FirstOrDefaultWithIncludesAsync(
-       e => e.Id == token.Id,
-       ct,
-       e => e.Company
-     );
+    var current = await _employeeRepository.GetByIdAsync(token.Id, ct);
 
     if (current is null) return null;
 
-    switch (token.Role.ToString())
-    {
-      case Rol.SuperAdministrator:
-      case Rol.Administrator:
-        var employee = await _employeeRepository.FirstOrDefaultWithIncludesAsync(e => e.Id == id && e.Company.Id == current.Company.Id, ct, e => e.Rol);
+    var strategy = new EmployeeGetByIdFactory(token, _employeeRepository).CreateStrategy();
 
-        if (employee is null) return null;
+    if (strategy is null) return null;
 
-        return new EmployeeOverviewDto
-        {
-          Id = employee.Id,
-          FirstName = employee.FirstName,
-          LastName = employee.LastName,
-          Email = employee.Email,
-          PhoneNumber = employee.PhoneNumber ?? string.Empty,
-          Role = employee.Rol.Name,
-        };
-      // the employee just can get himself record.  
-      case Rol.Employee:
-        if (id != current.Id) return null;
-
-        var employeeSelf = await _employeeRepository.FirstOrDefaultWithIncludesAsync(
-          e => e.Id == current.Id,
-          ct,
-          e => e.Rol
-        );
-
-        if (employeeSelf is null) return null;
-
-        return new EmployeeOverviewDto
-        {
-          Id = employeeSelf.Id,
-          FirstName = employeeSelf.FirstName,
-          LastName = employeeSelf.LastName,
-          Email = employeeSelf.Email,
-          PhoneNumber = employeeSelf.PhoneNumber ?? string.Empty,
-          Role = employeeSelf.Rol.Name
-        };
-      default:
-        return null;
-    }
+    return await strategy.ExecuteAsync(id, ct);
   }
 
   async public Task<EmployeeOverviewDto> Update(UserTokenDto token, EmployeeUpdateDto employee, int id, CancellationToken ct)

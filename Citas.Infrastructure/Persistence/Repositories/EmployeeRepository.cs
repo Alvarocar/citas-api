@@ -3,6 +3,7 @@ using Citas.Domain.Filters;
 using Citas.Domain.Repositories;
 using Citas.Infrastructure.Specifications;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Citas.Infrastructure.Persistence.Repositories;
 
@@ -25,6 +26,7 @@ public class EmployeeRepository : BaseRepository<Employee, int>, IEmployeeReposi
     return _set.Where(e => e.Email != null)
       .Where(e => e.Email! == email.ToLower())
       .Include(e => e.Rol)
+      .Include(e => e.Company)
       .FirstOrDefaultAsync(ct);
   }
 
@@ -40,5 +42,13 @@ public class EmployeeRepository : BaseRepository<Employee, int>, IEmployeeReposi
   {
     var query = _set.Include(e => e.Rol).Where(e => e.Company.Id == employee.Company.Id && e.Id != employee.Id);
     return new PaginationSpecification<Employee>(pagination).Apply(query).ToListAsync(ct);
+  }
+
+  public Task<Employee> FindOne(Expression<Func<Employee, bool>> predicate, CancellationToken cancellationToken = default)
+  {
+    return _set
+      .Include(e => e.Company)
+      .Include(e => e.Rol)
+      .FirstAsync(predicate, cancellationToken);
   }
 }
