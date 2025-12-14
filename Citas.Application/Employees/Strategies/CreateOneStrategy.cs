@@ -71,7 +71,7 @@ internal class EmployeeCreateOneSuperAdminStrategy(
 
     if (dto.Email is not null)
     {
-      var found = employeeRepository.FindByEmail(dto.Email, ct);
+      var found = await employeeRepository.FindByEmail(dto.Email, ct);
 
       if (found is not null) throw new AlreadyExistException("Este correo ya esta registrado");
     }
@@ -108,7 +108,7 @@ internal class EmployeeCreateOneAdminStrategy(
 
     if (dto.Email is not null)
     {
-      var found = employeeRepository.FindByEmail(dto.Email, ct);
+      var found = await employeeRepository.FindByEmail(dto.Email, ct);
 
       if (found is not null) throw new AlreadyExistException("Este correo ya esta registrado");
     }
