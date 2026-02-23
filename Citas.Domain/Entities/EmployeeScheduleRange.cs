@@ -1,21 +1,16 @@
 ﻿using Citas.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Citas.Domain.Entities;
 public class EmployeeScheduleRange
 {
-    public int Id { get; set; }
+  public int Id { get; set; }
 
-    public required EDay Day { get; set; }
+  public required EDay Day { get; set; }
 
-    public required TimeOnly StartTime { get; set; }
+  public required TimeOnly StartTime { get; set; }
 
-    public required TimeOnly EndTime { get; set; }
+  public required TimeOnly EndTime { get; set; }
 
-    public required EmployeeSchedule Schedule { get; set; }
+  public required EmployeeSchedule Schedule { get; set; }
 }
 

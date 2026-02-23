@@ -1,4 +1,4 @@
-﻿using Citas.Infrastructure.Factories.Employee;
+﻿using Citas.Infrastructure.Factories.Employees;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Citas.Infrastructure.DependencyInjection;

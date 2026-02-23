@@ -30,6 +30,7 @@ public static class DatabaseSetup
     services.AddScoped<IClientRepository, ClientRepository>();
     services.AddScoped<ICompanyRepository, CompanyRepository>();
     services.AddScoped<IEmployeeScheduleRepository, EmployeeScheduleRepository>();
+    services.AddScoped<IEmployeeScheduleRangeRepository, EmployeeScheduleRangeRepository>();
     services.AddScoped<IEmployeeScheduleExceptionRepository, EmployeeScheduleExceptionRepository>();
     services.AddScoped<IEmployeeServiceRepository, EmployeeServiceRepository>();
     services.AddScoped<IServiceRepository, ServiceRepository>();

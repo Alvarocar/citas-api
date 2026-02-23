@@ -4,4 +4,5 @@ namespace Citas.Domain.Repositories;
 
 public interface IEmployeeScheduleRepository : IRepository<EmployeeSchedule, int>
 {
+  void Attach(Company company);
 }

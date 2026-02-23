@@ -4,6 +4,7 @@ using Citas.Domain.Enums;
 using Citas.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -13,9 +14,11 @@ using NpgsqlTypes;
 namespace Citas.Infrastructure.Migrations
 {
     [DbContext(typeof(CitasDbContext))]
-    partial class CitasDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260223234100_Add_Name_Field_in_Schedule")]
+    partial class Add_Name_Field_in_Schedule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
