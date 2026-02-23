@@ -1,4 +1,4 @@
-﻿using Citas.Application.Dto;
+using Citas.Application.Dto;
 using Citas.Application.Employees.Strategies;
 using Citas.Application.Factories;
 using Citas.Domain.Entities;
@@ -16,6 +16,9 @@ public class EmployeeService(
     IEmployeeFactory _employeeFactory,
     IReservationRepository _reservationRepository,
     IEmployeeScheduleExceptionRepository _employeeScheduleExceptionRepository,
+    EmployeeCreateOneStrategy _employeeCreateOneStrategy,
+    EmployeeGetByIdStrategy _employeeGetByIdStrategy,
+    IEmployeeUpdateOneStrategyFactory _employeeUpdateOneStrategyFactory,
     IUnitOfWork _unitOfWork
   )
 {
@@ -65,12 +68,7 @@ public class EmployeeService(
 
   async public Task<UserTokenDto> CreateOne(EmployeeCreateDto dto, UserTokenDto token, CancellationToken ct)
   {
-    var strategy = new EmployeeCreateOneStrategyFactory(
-        employeeRepository: _employeeRepository,
-        rolRepository: _rolRepository,
-        companyRepository: _companyRepository,
-        factory: _employeeFactory
-      ).GetStrategy(token);
+    var strategy = _employeeCreateOneStrategy.GetStrategy(token);
 
     if (strategy is null) throw new ForbiddenException();
 
@@ -125,49 +123,29 @@ public class EmployeeService(
 
     if (current is null) return null;
 
-    var strategy = new EmployeeGetByIdFactory(token, _employeeRepository).CreateStrategy();
+    var strategy = _employeeGetByIdStrategy.GetStrategy(token);
 
     if (strategy is null) return null;
 
     return await strategy.ExecuteAsync(id, ct);
   }
 
-  async public Task<EmployeeOverviewDto> Update(UserTokenDto token, EmployeeUpdateDto employee, int id, CancellationToken ct)
+async public Task<EmployeeOverviewDto> Update(UserTokenDto token, EmployeeUpdateDto dto, int id, CancellationToken ct)
   {
-    var current = await _employeeRepository.FirstOrDefaultWithIncludesAsync(
-      e => e.Id == token.Id,
-      ct,
-      e => e.Company
-    );
+    var strategy = _employeeUpdateOneStrategyFactory.GetStrategy(token);
 
-    if (current is null) throw new NotFoundException();
+    if (strategy is null) throw new ForbiddenException();
 
-    var existingEmployee = await _employeeRepository.FirstOrDefaultWithIncludesAsync(e => e.Id == id && e.Company.Id == current.Company.Id, ct, e => e.Rol);
-
-    if (existingEmployee is null) throw new NotFoundException("Empleado no encontrado");
-
-    existingEmployee.FirstName = employee.Firstname;
-    existingEmployee.LastName = employee.Lastname;
-    existingEmployee.PhoneNumber = employee.PhoneNumber;
-    // in case of email change, we need to check if the new email is already taken and make some validations and excecutions
-    existingEmployee.Email = employee.Email;
-
-    if (!existingEmployee.Rol.Name.Equals(employee.Role.ToString()))
-    {
-      existingEmployee.Rol = await _rolRepository.FirstOrDefaultAsync(r => r.Name == employee.Role, ct)
-        ?? throw new NotFoundException("Rol no encontrado");
-    }
-
-    await _employeeRepository.SaveChangesAsync(ct);
+    var employee = await strategy.ExecuteAsync(token, id, dto, ct);
 
     return new EmployeeOverviewDto
     {
-      Id = existingEmployee.Id,
-      FirstName = existingEmployee.FirstName,
-      LastName = existingEmployee.LastName,
-      Email = existingEmployee.Email,
-      PhoneNumber = existingEmployee.PhoneNumber ?? string.Empty,
-      Role = existingEmployee.Rol.Name
+      Id = employee.Id,
+      FirstName = employee.FirstName,
+      LastName = employee.LastName,
+      Email = employee.Email,
+      PhoneNumber = employee.PhoneNumber ?? string.Empty,
+      Role = employee.Rol.Name
     };
   }
 

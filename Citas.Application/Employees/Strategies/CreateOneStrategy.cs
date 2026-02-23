@@ -15,13 +15,13 @@ namespace Citas.Application.Employees.Strategies;
 /// <exception cref="NotFoundException">
 ///   The role or company was not found.
 /// </exception>
-internal interface IEmployeeCreateOneStrategy
+public interface IEmployeeCreateOneStrategy
 {
   Task<Employee> ExecuteAsync(EmployeeCreateDto dto, CancellationToken cancellationToken);
 }
 
 // TODO: this need to be moved to a service.
-internal class EmployeeCreateOneStrategyFactory
+public class EmployeeCreateOneStrategy
   (
     IEmployeeRepository employeeRepository,
     IRolRepository rolRepository,
@@ -33,14 +33,14 @@ internal class EmployeeCreateOneStrategyFactory
   {
     return user.Role switch
     {
-      Rol.SuperAdministrator => new EmployeeCreateOneSuperAdminStrategy(
+      Rol.SuperAdministrator => new ConcreteEmployeeCreateOneSuperAdmin(
                   user,
                   employeeRepository,
                   rolRepository,
                   companyRepository,
                   factory
                 ),
-      Rol.Administrator => new EmployeeCreateOneAdminStrategy(
+      Rol.Administrator => new ConcreteEmployeeCreateOneAdmin(
                    user,
                   employeeRepository,
                   rolRepository,
@@ -52,7 +52,7 @@ internal class EmployeeCreateOneStrategyFactory
   }
 }
 
-internal class EmployeeCreateOneSuperAdminStrategy(
+internal class ConcreteEmployeeCreateOneSuperAdmin(
     UserTokenDto user,
     IEmployeeRepository employeeRepository,
     IRolRepository rolRepository,
@@ -89,7 +89,7 @@ internal class EmployeeCreateOneSuperAdminStrategy(
   }
 }
 
-internal class EmployeeCreateOneAdminStrategy(
+internal class ConcreteEmployeeCreateOneAdmin(
     UserTokenDto user,
     IEmployeeRepository employeeRepository,
     IRolRepository rolRepository,

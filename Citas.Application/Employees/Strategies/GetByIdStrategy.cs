@@ -4,7 +4,7 @@ using Citas.Domain.Repositories;
 
 namespace Citas.Application.Employees.Strategies;
 
-internal interface IEmployeeGetByIdStrategy
+public interface IEmployeeGetByIdStrategy
 {
   Task<EmployeeOverviewDto?> ExecuteAsync(int id, CancellationToken cancellationToken);
 }
@@ -16,17 +16,17 @@ internal interface IEmployeeGetByIdStrategy
 /// </summary>
 /// <param name="user">This user needs to bring company object</param>
 /// <param name="repository"></param>
-internal class EmployeeGetByIdFactory(UserTokenDto user, IEmployeeRepository repository)
+public class EmployeeGetByIdStrategy(IEmployeeRepository repository)
 {
-  public IEmployeeGetByIdStrategy? CreateStrategy()
+  public IEmployeeGetByIdStrategy? GetStrategy(UserTokenDto user)
   {
     if (user.Role == Rol.SuperAdministrator || user.Role == Rol.Administrator)
     {
-      return new EmployeeGetByIdAdminStrategy(user, repository);
+      return new ConcreteEmployeeGetByIdAdmin(user, repository);
     }
     if (user.Role == Rol.Employee)
     {
-      return new EmployeeGetByIdEmployeeStrategy(user, repository);
+      return new ConcreteEmployeeGetByIdEmployee(user, repository);
     }
     else
     {
@@ -35,7 +35,7 @@ internal class EmployeeGetByIdFactory(UserTokenDto user, IEmployeeRepository rep
   }
 }
 
-internal class EmployeeGetByIdAdminStrategy(
+internal class ConcreteEmployeeGetByIdAdmin(
   UserTokenDto current,
   IEmployeeRepository _employeeRepository
   ) : IEmployeeGetByIdStrategy
@@ -58,7 +58,7 @@ internal class EmployeeGetByIdAdminStrategy(
   }
 }
 
-internal class EmployeeGetByIdEmployeeStrategy(
+internal class ConcreteEmployeeGetByIdEmployee(
   UserTokenDto current,
   IEmployeeRepository _employeeRepository
   ) : IEmployeeGetByIdStrategy

@@ -5,7 +5,7 @@ using Citas.Domain.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace Citas.Infrastructure.Factories;
+namespace Citas.Infrastructure.Factories.Employees;
 
 public class EmployeeFactory(
     IPasswordHasherService _passwordHasher
