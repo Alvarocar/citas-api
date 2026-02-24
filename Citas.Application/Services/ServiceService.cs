@@ -18,7 +18,7 @@ public class ServiceService(
         UserTokenDto user,
         CancellationToken ct)
     {
-        var company = await _companyRepository.FirstOrDefaultAsync(c => c.Id == user.CompanyId, ct);
+        var company = await _companyRepository.GetByIdAsync(user.CompanyId, ct);
         if (company == null) throw new NotFoundException();
 
         var newService = _serviceFactory.Create(dto, company);

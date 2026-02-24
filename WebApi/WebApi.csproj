@@ -20,6 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Citas.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Citas.Application\Citas.Application.csproj" />
     <ProjectReference Include="..\Citas.Domain\Citas.Domain.csproj" />
     <ProjectReference Include="..\Citas.Infrastructure\Citas.Infrastructure.csproj" />

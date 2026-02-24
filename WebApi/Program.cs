@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Middlewares;
 
-internal class Program
+public class Program
 {
   private static void Main(string[] args)
   {

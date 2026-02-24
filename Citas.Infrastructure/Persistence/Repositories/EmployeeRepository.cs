@@ -44,11 +44,11 @@ public class EmployeeRepository : BaseRepository<Employee, int>, IEmployeeReposi
     return new PaginationSpecification<Employee>(pagination).Apply(query).ToListAsync(ct);
   }
 
-  public Task<Employee> FindOne(Expression<Func<Employee, bool>> predicate, CancellationToken cancellationToken = default)
+  public Task<Employee?> FindOne(Expression<Func<Employee, bool>> predicate, CancellationToken cancellationToken = default)
   {
     return _set
       .Include(e => e.Company)
       .Include(e => e.Rol)
-      .FirstAsync(predicate, cancellationToken);
+      .FirstOrDefaultAsync(predicate, cancellationToken);
   }
 }

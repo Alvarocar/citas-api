@@ -16,11 +16,9 @@ public static class DatabaseSetup
     var dataSourceBuilder = new NpgsqlDataSourceBuilder(conn);
     dataSourceBuilder.MapEnum<EReservationState>();
     dataSourceBuilder.MapEnum<EDay>();
-    services.AddDbContext<CitasDbContext>(opts => opts.UseNpgsql(conn, o =>
-    {
-      o.MapEnum<EReservationState>("enum__reservation_state");
-      o.MapEnum<EDay>("enum__day");
-    }));
+    var dataSource = dataSourceBuilder.Build();
+    services.AddSingleton(dataSource);
+    services.AddDbContext<CitasDbContext>(opts => opts.UseNpgsql(dataSource));
 
     services.AddScoped<IUnitOfWork, UnitOfWork>();
 

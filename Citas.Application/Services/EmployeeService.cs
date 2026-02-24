@@ -169,7 +169,7 @@ async public Task<EmployeeOverviewDto> Update(UserTokenDto token, EmployeeUpdate
     if (reservations is null || reservations.Any()) throw new ReservationAssignedException();
 
 
-    if (token.Role == Rol.Administrator)
+    if (token.Role == Rol.Administrator || token.Role == Rol.SuperAdministrator)
     {
       using (_unitOfWork)
       {

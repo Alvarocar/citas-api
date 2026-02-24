@@ -22,5 +22,5 @@ public interface IEmployeeRepository : IRepository<Employee, int>
   /// <param name="predicate"></param>
   /// <param name="cancellationToken"></param>
   /// <returns></returns>
-  Task<Employee> FindOne(Expression<Func<Employee, bool>> predicate, CancellationToken cancellationToken = default);
+  Task<Employee?> FindOne(Expression<Func<Employee, bool>> predicate, CancellationToken cancellationToken = default);
 }
