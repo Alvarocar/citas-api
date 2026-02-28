@@ -14,11 +14,12 @@ public static class DatabaseSetup
   {
     var conn = configuration.GetConnectionString("DBConnection");
     var dataSourceBuilder = new NpgsqlDataSourceBuilder(conn);
-    dataSourceBuilder.MapEnum<EReservationState>();
-    dataSourceBuilder.MapEnum<EDay>();
+    dataSourceBuilder.MapEnum<EReservationState>("enum__reservation_state");
+    dataSourceBuilder.MapEnum<EDay>("enum__day");
     var dataSource = dataSourceBuilder.Build();
     services.AddSingleton(dataSource);
-    services.AddDbContext<CitasDbContext>(opts => opts.UseNpgsql(dataSource));
+    services.AddDbContext<CitasDbContext>(opts => opts
+      .UseNpgsql(dataSource));
 
     services.AddScoped<IUnitOfWork, UnitOfWork>();
 

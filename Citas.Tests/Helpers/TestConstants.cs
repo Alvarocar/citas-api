@@ -1,3 +1,6 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 namespace Citas.Tests.Helpers;
 
 public static class TestConstants
@@ -9,6 +12,11 @@ public static class TestConstants
   public const string CompanyAddress = "Calle 1";
   public const int NotFoundId = 999999;
 
+  public static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
+  {
+    Converters = { new JsonStringEnumConverter() },
+  };
+
   public static class Routes
   {
     public const string CreateAdmin = "/api/employees/create-admin";
@@ -17,5 +25,6 @@ public static class TestConstants
     public const string Check = "/api/auth/check";
     public const string Logout = "/api/auth/logout";
     public const string Services = "/api/services";
+    public const string Schedules = "/api/schedules";
   }
 }

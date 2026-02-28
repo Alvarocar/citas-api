@@ -1,8 +1,10 @@
 using Citas.Domain.Entities;
+using Citas.Domain.Enums;
 using Citas.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -59,9 +61,10 @@ public class CitasApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     builder.ConfigureServices(services =>
     {
-      // DatabaseSetup now registers a NpgsqlDataSource singleton and uses it in
-      // UseNpgsql (no o.MapEnum on the EF side). We replace only the data source
-      // and DbContext options so they point at the test container.
+      // Replace the production NpgsqlDataSource and DbContext with ones that
+      // point at the Testcontainers postgres instance. We build the data source
+      // with MapEnum so Npgsql knows how to read/write the PG enum types, then
+      // pass it directly to UseNpgsql (no o.MapEnum needed - that would duplicate).
       services.RemoveAll<NpgsqlDataSource>();
       services.RemoveAll<DbContextOptions<CitasDbContext>>();
       services.RemoveAll<DbContextOptions>();
@@ -69,7 +72,13 @@ public class CitasApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
       var dataSource = BuildTestDataSource();
       services.AddSingleton(dataSource);
-      services.AddDbContext<CitasDbContext>(opts => opts.UseNpgsql(dataSource));
+      services.AddDbContext<CitasDbContext>(opts => opts
+        .UseNpgsql(dataSource, o =>
+        {
+          o.MapEnum<EReservationState>("enum__reservation_state");
+          o.MapEnum<EDay>("enum__day");
+        })
+        .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
     });
   }
 
@@ -92,7 +101,13 @@ public class CitasApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
   {
     var dataSource = BuildTestDataSource();
     var optionsBuilder = new DbContextOptionsBuilder<CitasDbContext>();
-    optionsBuilder.UseNpgsql(dataSource);
+    optionsBuilder
+      .UseNpgsql(dataSource, o =>
+      {
+        o.MapEnum<EReservationState>("enum__reservation_state");
+        o.MapEnum<EDay>("enum__day");
+      })
+      .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
 
     await using var context = new CitasDbContext(optionsBuilder.Options);
     await context.Database.MigrateAsync();
@@ -127,8 +142,8 @@ public class CitasApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
   private NpgsqlDataSource BuildTestDataSource()
   {
     var builder = new NpgsqlDataSourceBuilder(BuildConnectionString());
-    builder.MapEnum<Citas.Domain.Enums.EReservationState>();
-    builder.MapEnum<Citas.Domain.Enums.EDay>();
+    builder.MapEnum<EReservationState>("enum__reservation_state");
+    builder.MapEnum<EDay>("enum__day");
     return builder.Build();
   }
 

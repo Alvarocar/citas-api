@@ -1,4 +1,5 @@
 using Citas.Application.Dto;
+using Citas.Domain.Enums;
 
 namespace Citas.Tests.Helpers;
 
@@ -70,5 +71,18 @@ public static partial class TestDtos
     Description = "A test service",
     SuggestedPrice = 25.0f,
     IsUnavailable = false
+  };
+
+  /// <summary>
+  /// Builds a ScheduleCreateDto with sensible defaults.
+  /// </summary>
+  public static ScheduleCreateDto MakeScheduleCreateDto(string name = "Test Schedule") => new()
+  {
+    Name = name,
+    Ranges =
+    [
+      new ScheduleRangeDto { Day = EDay.MONDAY, StartTime = "08:00", EndTime = "17:00" },
+      new ScheduleRangeDto { Day = EDay.FRIDAY, StartTime = "09:00", EndTime = "14:00" },
+    ]
   };
 }

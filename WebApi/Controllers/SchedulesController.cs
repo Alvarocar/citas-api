@@ -14,7 +14,7 @@ public class SchedulesController(
 {
 
   [HttpPost]
-  [Authorize(Roles = Rol.Administrator)]
+  [Authorize(Roles = $"{Rol.Administrator},{Rol.SuperAdministrator}")]
   public async Task<IActionResult> Create([FromBody] ScheduleCreateDto dto, CancellationToken ct)
   {
     var user = GetUserTokenFromClaims();
